@@ -31,9 +31,15 @@ I did find the initial attempt pretty bloated. I took a look through the files a
 
 ## Docs
 https://fastapi.tiangolo.com/tutorial/first-steps/
+
 https://python-poetry.org/docs/basic-usage/
+
 https://hub.docker.com/_/mongo
+
 https://beanie-odm.dev/getting-started/
+
+## References
+https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
 consider pydantic
