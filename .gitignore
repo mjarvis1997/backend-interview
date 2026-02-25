@@ -1,0 +1,15 @@
+# Caching
+__pycache__
+
+# Virtual environments
+.venv
+
+# Environment variables
+.env
+
+# Poetry
+poetry.lock
+
+# IDE config
+.idea
+.vscode
