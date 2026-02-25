@@ -1,8 +1,15 @@
+import os
+from beanie import init_beanie
+from dotenv import load_dotenv
 from fastapi import FastAPI
 from pymongo import AsyncMongoClient
-from beanie import init_beanie
 from app.models import Event
 
+# Load environment variables from .env file
+# In docker, we will set env vars directly, this is mainly for local development
+load_dotenv()
+
+# Initialize FastAPI app
 app = FastAPI()
 
 
@@ -12,7 +19,7 @@ async def app_init():
 
     # TODO: Move connection string to config or env
     # Create Async PyMongo client
-    client = AsyncMongoClient("mongodb://root:example@localhost:27017")
+    client = AsyncMongoClient(os.getenv("MONGODB_URI", "foo"))
 
     # Init beanie with the Product document class
     await init_beanie(database=client.main, document_models=[Event])

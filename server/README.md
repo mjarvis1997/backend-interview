@@ -1,26 +1,43 @@
 ## Setup
 
+### Local Development
+1. **Install Docker**
+
+1. **Build and run necessary containers**
+   ```bash
+   docker-compose up --build
+   ```
+
 1. **Install Poetry** (if not already installed):
 https://python-poetry.org/docs/#installing-with-pipx
 
-2. **Install dependencies**:
+1. **Install dependencies**:
    ```bash
    cd server
    poetry install
    ```
 
-3. **Run the server**:
+1. **Run the server**:
    ```bash
-   poetry run start
+   poetry run uvicorn app.main:app --reload --port 8000
    ```
 
-4. **Access the API**:
+1. **Access the API**:
    - API: http://localhost:8000
 
-## Docker setup
-```
-docker run --name mongodb -d mongo:8.2.6-rc0-noble
-```
+### Docker Setup
+
+1. **Start all services** (FastAPI + MongoDB + Mongo Express):
+   ```bash
+   docker compose --profile prod up --build
+   ```
+
+2. **Access services**:
+   - API: http://localhost:8000
+   - MongoDB: localhost:27017
+   - Mongo Express: http://localhost:8081 (mongoexpressuser/mongoexpresspass)
+
+The Dockerfile automatically generates requirements.txt from your Poetry configuration, so you don't need to manually export dependencies.
 
 ## AI In My Workflow
 
@@ -28,6 +45,24 @@ docker run --name mongodb -d mongo:8.2.6-rc0-noble
 Project structure and package management have consistent standards and the process of initializing a new project can be tedious, so it was a good opportunity to save some time.
 
 I did find the initial attempt pretty bloated. I took a look through the files and ended up using a clean poetry project and copied the helpful parts of the AI generated directory. It was helpful to see some modern patterns but I also compared the output with what is recommended in the docs for poetry and FastAPI.
+
+### Brainstorming Docker strategy
+I had some questions about the best way to Dockerize the python part of this backend. I did some googling and chatted with Claude about this to arrive at the conclusions below.
+
+Claude had a pretty good first attempt at generating the Dockerfile but I did not like that it required me to run `poetry export` locally everytime I added a dependency, so I instructed it to include the `requirements.txt` generation as part of the Dockerfile. This was one of those fun moments where the LLM turned around and said hey! You're right! That is a much better solution.
+> Is it worthwhile to dockerize while doing local development?
+
+Definitely good arguments on both sides of this. Using docker means more consistent outcomes across different machines and makes startup simpler (just `compose up`). But it does mean the developer make hot-reloading slower and more complicated, and also means devs would need to configure containerization features within their IDE or we would need volumes to allow code changes on the machine itself to propogate to the docker image.
+
+Personally my main concern is keeping local development fast and straightforward, which led me to pick a middle ground. Provide instructions for building the python server directly for local development, but set it up with a Dockerfile that we can use for testing or deployment.
+
+
+> Should we use venv? Just directly install dependencies?
+
+Docker provides isolation inherently, it's a bit redundant to spin up a venv inside the image. The argument for using `venv` within the image is that it would more closely mimic the local setup and potentially have less inconsistencies when deploying.
+> Should we use `poetry run` or handle `venv` creation and use `python3` directly?
+
+You could use `poetry` to run within the container but for the most part it seems like unneccessary bloat. Because we are not using `venv` within the image `poetry`'s usefuleness is pretty minimal.
 
 ## Docs
 https://fastapi.tiangolo.com/tutorial/first-steps/
@@ -38,9 +73,10 @@ https://hub.docker.com/_/mongo
 
 https://beanie-odm.dev/getting-started/
 
+https://pypi.org/project/python-dotenv/
+
 ## References
 https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
-consider pydantic
-setup mongodb and some fastapi endpoints to test it
+setup basic create endpoint outlined in the docs

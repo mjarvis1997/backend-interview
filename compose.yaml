@@ -1,4 +1,14 @@
 services:
+  api:
+    build: ./server
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    environment:
+      - MONGODB_URI=mongodb://root:example@mongo:27017/
+    profiles: [prod]
+
   mongo:
     image: mongo:8.2.6-rc0-noble
     restart: always
