@@ -39,17 +39,25 @@ https://python-poetry.org/docs/#installing-with-pipx
 
 The Dockerfile automatically generates requirements.txt from your Poetry configuration, so you don't need to manually export dependencies.
 
+## Considerations for moving to production
+Because this is a proof of concept I made some concessions for ease of setup and testing. Here is a list of things I would plan to address before actually sharing or deploying this project:
+
+- Remove env vars from git history
+- Provision non-root users for db access
+- Configure env vars and docker setup to support multiple environments (local, test, stage, prod)
+
 ## AI In My Workflow
 
 ### Used for initial scaffolding
 Project structure and package management have consistent standards and the process of initializing a new project can be tedious, so it was a good opportunity to save some time.
 
-I did find the initial attempt pretty bloated. I took a look through the files and ended up using a clean poetry project and copied the helpful parts of the AI generated directory. It was helpful to see some modern patterns but I also compared the output with what is recommended in the docs for poetry and FastAPI.
+I did find the initial attempt pretty bloated, for proof of concepts I prefer to avoid adding boilerplate for the sake of it and try to only include what is truly necessary. I took a look through the files and ended up using a clean poetry project and copied the helpful parts of the AI generated directory. It was helpful to see some modern patterns but mostly I relied on the documentation for FastApi. 
 
 ### Brainstorming Docker strategy
 I had some questions about the best way to Dockerize the python part of this backend. I did some googling and chatted with Claude about this to arrive at the conclusions below.
 
 Claude had a pretty good first attempt at generating the Dockerfile but I did not like that it required me to run `poetry export` locally everytime I added a dependency, so I instructed it to include the `requirements.txt` generation as part of the Dockerfile. This was one of those fun moments where the LLM turned around and said hey! You're right! That is a much better solution.
+
 > Is it worthwhile to dockerize while doing local development?
 
 Definitely good arguments on both sides of this. Using docker means more consistent outcomes across different machines and makes startup simpler (just `compose up`). But it does mean the developer make hot-reloading slower and more complicated, and also means devs would need to configure containerization features within their IDE or we would need volumes to allow code changes on the machine itself to propogate to the docker image.
@@ -75,8 +83,12 @@ https://beanie-odm.dev/getting-started/
 
 https://pypi.org/project/python-dotenv/
 
+https://docs.docker.com/compose/how-tos/profiles/
+
 ## References
 https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
 setup basic create endpoint outlined in the docs
+instead of directly storing event, enqueue the task using RQ
+handle deadletter queue
