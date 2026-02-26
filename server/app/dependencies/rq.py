@@ -1,4 +1,5 @@
 import time
+import os
 from random import random
 from dotenv import load_dotenv
 from rq import Queue
@@ -32,8 +33,9 @@ async def ingest_event(event_data: dict):
         await init_database()
         _DB_INITIALIZED = True
 
-    # Simulate some processing time randomly between 0.1 and 1 second
-    simulated_delay = 0.1 + (0.9 * random())
+    # Simulate some processing time randomly up to MAX_INGESTION_DELAY_SECONDS to mimic real-world ingestion delays
+    max_delay_seconds = int(os.getenv("MAX_INGESTION_DELAY_SECONDS", "1"))
+    simulated_delay = max_delay_seconds * random()
     time.sleep(simulated_delay)
 
     # Create and insert the event

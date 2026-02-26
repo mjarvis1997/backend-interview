@@ -110,13 +110,13 @@ https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
 core:
-dockerize rq dashboard
+elasticsearch
 unit tests
 integration tests
-simulate higher load, integration testing
 
 bonus:
 handle deadletter queue
 simulate higher load and save/log metrics
+simulate higher load
 
  
