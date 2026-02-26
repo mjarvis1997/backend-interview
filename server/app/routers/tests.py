@@ -1,6 +1,10 @@
 from datetime import datetime
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends
+from redis import Redis
+from typing import Annotated
 from app.models.event import Event
+from app.config.redis import get_redis
+
 
 router = APIRouter(prefix="/tests")
 
@@ -30,3 +34,10 @@ async def create_event_test():
 async def delete_events_test():
     await Event.delete_all()
     return {"message": "All events deleted"}
+
+
+@router.get("/redis")
+async def redis_test(r: Annotated[Redis, Depends(get_redis)]):
+    r.set("test_key", "Hello Redis!")
+    value = r.get("test_key")
+    return {"message": value}

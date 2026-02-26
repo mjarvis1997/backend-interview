@@ -5,9 +5,18 @@ services:
       - "8000:8000"
     depends_on:
       - mongo
+      - redis
     environment:
       - MONGODB_URI=mongodb://root:example@mongo:27017/
+      - REDIS_URL=redis://redis:6379/0
     profiles: [prod]
+
+  redis:
+    image: redis:8.6.1-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
 
   mongo:
     image: mongo:8.2.6-rc0-noble

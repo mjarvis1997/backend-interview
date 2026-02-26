@@ -45,6 +45,7 @@ Because this is a proof of concept I made some concessions for ease of setup and
 - Remove env vars from git history
 - Provision non-root users for db access
 - Configure env vars and docker setup to support multiple environments (local, test, stage, prod)
+- Use external volume for Redis data so it would persist between restarts
 
 ## AI In My Workflow
 
@@ -72,6 +73,9 @@ Docker provides isolation inherently, it's a bit redundant to spin up a venv ins
 
 You could use `poetry` to run within the container but for the most part it seems like unneccessary bloat. Because we are not using `venv` within the image `poetry`'s usefuleness is pretty minimal.
 
+### Asynchronous background workers
+I initially had a few different ideas for this - unsure of how heavy the implemenation should be and what exact mechanism to use for the queue itself. I asked Claude for some input and it recommended a few options, one of which was to use Redis for the queue itself, which seemed perfect to me because there is already a requirement to use it for caching. I did some investigating online and found RQ, a python library intended for this exact purpose. Claude offered to hand-roll queueing management functions but for this proof of concept it seemed better to leverage an existing solution.
+
 ## Docs
 https://fastapi.tiangolo.com/tutorial/first-steps/
 
@@ -84,6 +88,8 @@ https://beanie-odm.dev/getting-started/
 https://pypi.org/project/python-dotenv/
 
 https://docs.docker.com/compose/how-tos/profiles/
+
+https://redis.io/docs/latest/develop/clients/redis-py/
 
 ## References
 https://github.com/roman-right/beanie-fastapi-demo
