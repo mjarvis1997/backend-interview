@@ -1,4 +1,5 @@
 import os
+from contextlib import asynccontextmanager
 from beanie import init_beanie
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -11,12 +12,9 @@ from app.routers.events import router as events_router
 # In docker, we will set env vars directly, this is mainly for local development
 load_dotenv()
 
-# Initialize FastAPI app
-app = FastAPI()
 
-
-@app.on_event("startup")
-async def app_init():
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
     """Initialize the database connection and beanie on application startup."""
 
     # Create Async PyMongo client
@@ -26,5 +24,10 @@ async def app_init():
     await init_beanie(database=client.main, document_models=[Event])
 
     # Attach routers to app
-    app.include_router(tests_router)
-    app.include_router(events_router)
+    _app.include_router(tests_router)
+    _app.include_router(events_router)
+    yield
+
+
+# Initialize FastAPI app
+app = FastAPI(lifespan=lifespan)
