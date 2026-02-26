@@ -1,7 +1,7 @@
 from datetime import datetime
 from fastapi import APIRouter
 from app.models.event import Event
-from app.config.redis import DependsRedis
+from app.dependencies.redis import DependsRedis
 
 
 router = APIRouter(prefix="/tests")

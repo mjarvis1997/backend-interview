@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from app.models.event import Event
+from app.dependencies.rq import enqueue_event_ingestion
 
 router = APIRouter(prefix="/events")
 
@@ -12,5 +13,8 @@ async def get_events():
 
 @router.post("/")
 async def create_event(event: Event):
-    await event.insert()
-    return event
+    job_id = enqueue_event_ingestion(event)
+    return {
+        "message": "Event ingestion enqueued",
+        "job_id": job_id
+    }

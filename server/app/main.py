@@ -1,13 +1,10 @@
-import os
 from contextlib import asynccontextmanager
-from beanie import init_beanie
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from pymongo import AsyncMongoClient
-from app.models.event import Event
 from app.routers.tests import router as tests_router
 from app.routers.events import router as events_router
-from app.config.redis import pool
+from app.dependencies.redis import pool
+from app.core.database import init_database
 
 # Load environment variables from .env file
 # In docker, we will set env vars directly, this is mainly for local development
@@ -20,11 +17,7 @@ async def lifespan(_app: FastAPI):
 
     # ***** Initialization code for setup here *****
 
-    # Create Async PyMongo client
-    client = AsyncMongoClient(os.getenv("MONGODB_URI", "foo"))
-
-    # Init beanie with the Product document class
-    await init_beanie(database=client.main, document_models=[Event])
+    await init_database()
 
     # Attach routers to app
     _app.include_router(tests_router)

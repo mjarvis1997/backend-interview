@@ -42,8 +42,8 @@ The Dockerfile automatically generates requirements.txt from your Poetry configu
 ## Considerations for moving to production
 Because this is a proof of concept I made some concessions for ease of setup and testing. Here is a list of things I would plan to address before actually sharing or deploying this project:
 
-- Remove env vars from git history
-- Provision non-root users for db access
+- Use cloud service for secrets
+- Provision non-root users for db access (current connection string is hardcoded)
 - Configure env vars and docker setup to support multiple environments (local, test, stage, prod)
 - Use external volume for Redis data so it would persist between restarts
 
@@ -75,6 +75,13 @@ You could use `poetry` to run within the container but for the most part it seem
 
 ### Asynchronous background workers
 I initially had a few different ideas for this - unsure of how heavy the implemenation should be and what exact mechanism to use for the queue itself. I asked Claude for some input and it recommended a few options, one of which was to use Redis for the queue itself, which seemed perfect to me because there is already a requirement to use it for caching. I did some investigating online and found RQ, a python library intended for this exact purpose. Claude offered to hand-roll queueing management functions but for this proof of concept it seemed better to leverage an existing solution.
+
+## Db connections for workers
+I had setup `beanie` to handle interacting with the db which worked well, but ran into an issue when I started spinning up workers. They simply run the python function they have been passed, which by default doesn't have a db connection. 
+
+My first thought was to init a pool of connections to reuse between workers, but after discussing with Claude I decided to just wrap the db connection logic in a function and let the workers individually setup a connection. A pool maybe could be better in production contexts if the constant connecting/reconnecting became an issue but there is a nice simplicity to the non-centralzied approach which allows workers to function without much scaffolding or codependency.
+
+I did pushback on the immediate Claude setup, because it used a different Async db connection client than I was already using, and added overly defensive exception handling. But after asking if they were truly necessary and the pros and cons it was quick to admit it was overkill and rip that out for me.
 
 ## Docs
 https://fastapi.tiangolo.com/tutorial/first-steps/
