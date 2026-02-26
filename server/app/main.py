@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from app.routers.tests import router as tests_router
 from app.routers.events import router as events_router
 from app.dependencies.redis import pool
-from app.core.database import init_database
+from app.dependencies.database import init_database
 
 # Load environment variables from .env file
 # In docker, we will set env vars directly, this is mainly for local development

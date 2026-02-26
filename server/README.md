@@ -81,7 +81,12 @@ I had setup `beanie` to handle interacting with the db which worked well, but ra
 
 My first thought was to init a pool of connections to reuse between workers, but after discussing with Claude I decided to just wrap the db connection logic in a function and let the workers individually setup a connection. A pool maybe could be better in production contexts if the constant connecting/reconnecting became an issue but there is a nice simplicity to the non-centralzied approach which allows workers to function without much scaffolding or codependency.
 
-I did pushback on the immediate Claude setup, because it used a different Async db connection client than I was already using, and added overly defensive exception handling. But after asking if they were truly necessary and the pros and cons it was quick to admit it was overkill and rip that out for me.
+Pushback:
+- Claude used a different async connection client instead of the currently installed one
+- Claude had outdated info about RQ's support for async tasks
+   - It initially created `sync` wrappers for all of the worker functions because it did not think RQ supported `async` functions, this struck me as odd.
+   - I found an issue on RQ's github page about this where they noted that while the caller must be synchronous, the workers themselves are fully capable of handling async function calls
+   - Claude was able to cleanup the wrapper and remove the bloat after being asked
 
 ## Docs
 https://fastapi.tiangolo.com/tutorial/first-steps/
@@ -102,6 +107,7 @@ https://redis.io/docs/latest/develop/clients/redis-py/
 https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
-instead of directly storing event, enqueue the task using RQ
 handle deadletter queue
 look into rq dashboard
+think about unit tests
+simulate higher load, integration testing
