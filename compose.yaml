@@ -8,6 +8,21 @@ services:
       - redis
     environment:
       - MONGODB_URI=mongodb://root:example@mongo:27017/
+      - REDIS_URL=redis://redis:6379/0
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    profiles: [prod]
+
+  workers:
+    build: ./server
+    depends_on:
+      - mongo
+      - redis
+    environment:
+      - MONGODB_URI=mongodb://root:example@mongo:27017/
+      - REDIS_URL=redis://redis:6379/0
+    command: rq worker ingestion_queue --url redis://redis:6379/0
+    deploy:
+      replicas: 3
     profiles: [prod]
 
   redis:
