@@ -1,0 +1,12 @@
+POST http://localhost:8000/events
+Content-Type: application/json
+
+{
+  "type": "click",
+  "timestamp": 1234567890,
+  "user_id": 1234,
+  "source_url": "http://example.com",
+  "metadata": {
+    "key": "value"
+  }
+}
