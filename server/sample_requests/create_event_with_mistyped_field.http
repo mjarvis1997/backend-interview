@@ -5,7 +5,7 @@ Content-Type: application/json
   // Using integer where string is expected
   "type": 123,
   "timestamp": 1234567890,
-  "user_id": 1234,
+  "user_id": "e4b75896-9354-4bd2-a15a-fdb20b20e802",
   "source_url": "http://example.com",
   "metadata": {
     "key": "value"

@@ -20,7 +20,7 @@ async def create_event_test():
     event = Event(
         type="click",
         timestamp=datetime(2026, 2, 23),
-        user_id=123,
+        user_id="e4b75896-9354-4bd2-a15a-fdb20b20e802",
         source_url="http://example.com",
         metadata={"key": "value"}
     )

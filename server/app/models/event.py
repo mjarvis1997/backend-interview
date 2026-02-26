@@ -7,6 +7,6 @@ class Event(Document):
 
     type: str
     timestamp: datetime
-    user_id: int
+    user_id: str
     source_url: str
     metadata: dict
