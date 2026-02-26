@@ -107,7 +107,20 @@ https://redis.io/docs/latest/develop/clients/redis-py/
 https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
+worker process dockerized
 handle deadletter queue
 look into rq dashboard
 think about unit tests
 simulate higher load, integration testing
+
+rq worker ingestion_queue &
+
+nohup poetry run rq worker ingestion_queue > output1.log &
+nohup poetry run rq worker ingestion_queue > output2.log &
+nohup poetry run rq worker ingestion_queue > output3.log &
+nohup poetry run rq worker ingestion_queue > output4.log &
+nohup poetry run rq worker ingestion_queue > output5.log &
+
+
+kill 15753 && kill 15878 && kill 16008 && kill 16136
+ 
