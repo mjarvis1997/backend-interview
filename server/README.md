@@ -95,7 +95,6 @@ https://redis.io/docs/latest/develop/clients/redis-py/
 https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
-setup basic create endpoint outlined in the docs
 instead of directly storing event, enqueue the task using RQ
 handle deadletter queue
 look into rq dashboard
