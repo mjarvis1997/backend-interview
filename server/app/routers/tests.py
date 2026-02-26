@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import APIRouter
 from app.models.event import Event
 
@@ -14,9 +15,13 @@ async def root():
 @router.get("/create-event")
 async def create_event_test():
     """Test endpoint to create a sample event in the database."""
-
-    event = Event(type="click", timestamp="1234567890", user_id=123,
-                  source_url="http://example.com", metadata={"key": "value"})
+    event = Event(
+        type="click",
+        timestamp=datetime(2026, 2, 23),
+        user_id=123,
+        source_url="http://example.com",
+        metadata={"key": "value"}
+    )
     await event.insert()
     return {"message": "Event created"}
 
