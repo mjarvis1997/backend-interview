@@ -103,6 +103,8 @@ https://docs.docker.com/compose/how-tos/profiles/
 
 https://redis.io/docs/latest/develop/clients/redis-py/
 
+https://github.com/Parallels/rq-dashboard
+
 ## References
 https://github.com/roman-right/beanie-fastapi-demo
 
