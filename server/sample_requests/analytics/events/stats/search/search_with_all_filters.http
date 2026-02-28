@@ -1,0 +1,2 @@
+GET http://localhost:8000/events/search?q=desktop&event_type=pageview&start_date=2026-02-01T00:00:00Z&end_date=2026-02-28T23:59:59Z&size=10
+Content-Type: application/json

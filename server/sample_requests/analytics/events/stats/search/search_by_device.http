@@ -1,0 +1,2 @@
+GET http://localhost:8000/events/search?q=mobile
+Content-Type: application/json

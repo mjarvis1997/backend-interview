@@ -1,0 +1,2 @@
+GET http://localhost:8000/events/search?q=chrome
+Content-Type: application/json

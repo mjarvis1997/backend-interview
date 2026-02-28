@@ -1,0 +1,2 @@
+GET http://localhost:8000/events/search?q=firefox&event_type=click
+Content-Type: application/json
