@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from app.routers.tests import router as tests_router
 from app.routers.events import router as events_router
-from app.dependencies.redis import pool
+from app.dependencies.redis import queue_pool, cache_pool
 from app.dependencies.database import init_database
 
 # Load environment variables from .env file
@@ -26,8 +26,9 @@ async def lifespan(_app: FastAPI):
     yield
     # ***** Cleanup code for teardown here *****
 
-    # Close redis connection pool
-    pool.close()
+    # Close redis connection pools
+    queue_pool.close()
+    cache_pool.close()
 
 
 # Initialize FastAPI app

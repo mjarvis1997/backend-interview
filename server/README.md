@@ -97,6 +97,8 @@ https://hub.docker.com/_/mongo
 
 https://beanie-odm.dev/getting-started/
 
+https://beanie-odm.dev/tutorial/aggregation/
+
 https://pypi.org/project/python-dotenv/
 
 https://docs.docker.com/compose/how-tos/profiles/
@@ -105,7 +107,6 @@ https://redis.io/docs/latest/develop/clients/redis-py/
 
 https://github.com/Parallels/rq-dashboard
 
-## References
 https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
