@@ -103,6 +103,7 @@ This is sufficient for a proof of concept but in production I would consider a m
 ### Indexing Strategy
 #### MongoDB
 Here I focused on indexing the fields that are most commonly used for filtering and aggregation in the endpoints. I also thought about what a frontend user would want to filter or group by when looking at event data.
+I suspect most use cases would involve filtering by a specific time range, so I created compound indexes that include the timestamp along with other commonly filtered fields. In terms of directionality, I set the timestamp to be descending in the indexes since most queries will likely be looking for recent events.
 
 ##### Indexes:
 - `Timestamp + Type` (compound index):
