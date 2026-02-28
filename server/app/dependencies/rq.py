@@ -33,11 +33,6 @@ async def ingest_event(event_data: dict):
         await init_database()
         _DB_INITIALIZED = True
 
-    # Simulate some processing time randomly up to MAX_INGESTION_DELAY_SECONDS to mimic real-world ingestion delays
-    max_delay_seconds = int(os.getenv("MAX_INGESTION_DELAY_SECONDS", "1"))
-    simulated_delay = max_delay_seconds * random()
-    time.sleep(simulated_delay)
-
     # Randomly fail to simulate transient errors and trigger retries (10% failure rate)
     if random() < 0.1:
         raise Exception("Simulated transient error during event ingestion")
