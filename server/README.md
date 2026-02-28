@@ -110,13 +110,14 @@ https://github.com/roman-right/beanie-fastapi-demo
 
 ## TODO
 core:
-elasticsearch
-unit tests
-integration tests
+- Add Elasticsearch (2-3 hours)
+- Implement Missing API Endpoints (3-4 hours)
+- Create ARCHITECTURE.md (1-2 hours)
+- Add Testing Suite (2-3 hours)
 
 bonus:
-handle deadletter queue
-simulate higher load and save/log metrics
-simulate higher load
-
+- Basic rate limiting or abuse prevention middleware
+- Event deduplication logic in the worker
+- Dead letter queue simulation for events that exhaust retries
+- AWS SQS drop-in design notes — what would change if you replaced the in-process queue with real SQS?
  

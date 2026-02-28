@@ -5,13 +5,23 @@ Run with: python simple_load_test.py [num_events]
 Example: python simple_load_test.py 50
 """
 
-import requests
 import time
 import json
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from uuid import uuid4
 from random import choice, randint
+import requests
+
+
+def get_random_recent_timestamp():
+    """Generate a random timestamp within the last 31 days."""
+    random_days_ago = randint(0, 30)
+    random_hours_ago = randint(0, 23)
+    random_minutes_ago = randint(0, 59)
+    timestamp = datetime.now() - timedelta(days=random_days_ago,
+                                           hours=random_hours_ago, minutes=random_minutes_ago)
+    return timestamp.isoformat()
 
 
 def generate_event():
@@ -23,15 +33,17 @@ def generate_event():
         "http://example.com/checkout",
         "http://example.com/profile"
     ]
+    browsers = ["chrome", "firefox", "safari"]
+    devices = ["desktop", "mobile", "tablet"]
 
     return {
         "type": choice(event_types),
-        "timestamp": datetime.now().isoformat(),
+        "timestamp": get_random_recent_timestamp(),
         "user_id": str(uuid4()),
         "source_url": choice(urls),
         "metadata": {
-            "browser": choice(["chrome", "firefox", "safari"]),
-            "device": choice(["desktop", "mobile", "tablet"]),
+            "browser": choice(browsers),
+            "device": choice(devices),
             "session_id": str(uuid4())
         }
     }
