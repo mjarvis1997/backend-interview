@@ -2,7 +2,7 @@ import time
 import os
 from random import random
 from dotenv import load_dotenv
-from rq import Queue
+from rq import Queue, Retry
 from app.dependencies.redis import get_redis
 from app.models.event import Event
 from app.dependencies.database import init_database
@@ -38,6 +38,10 @@ async def ingest_event(event_data: dict):
     simulated_delay = max_delay_seconds * random()
     time.sleep(simulated_delay)
 
+    # Randomly fail to simulate transient errors and trigger retries (10% failure rate)
+    if random() < 0.1:
+        raise Exception("Simulated transient error during event ingestion")
+
     # Create and insert the event
     event = Event(**event_data)
     await event.insert()
@@ -51,5 +55,10 @@ def enqueue_event_ingestion(event: Event):
     """
     # Convert Pydantic model to dict for serialization
     event_data = event.model_dump()
-    job = q.enqueue(ingest_event, event_data)
+    job = q.enqueue(
+        f=ingest_event,
+        args=[event_data],
+        retry=Retry(max=3, interval=[10, 30, 60])
+    )
+
     return job.id

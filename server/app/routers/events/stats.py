@@ -16,21 +16,6 @@ REALTIME_STATS_CACHE_KEY = generate_cache_key("realtime-stats")
 router = APIRouter()
 
 
-def get_cache_ttl(time_bucket: Optional[TimeBucket]) -> int:
-    """Determine cache TTL based on time bucket granularity."""
-
-    # Cache daily stats for 6 hours
-    if time_bucket == "daily":
-        return ONE_HOUR_IN_SECONDS * 6
-
-    # Cache weekly stats for 24 hours
-    if time_bucket == "weekly":
-        return ONE_HOUR_IN_SECONDS * 24
-
-    # By default, cache stats for 1 hour
-    return ONE_HOUR_IN_SECONDS * 6
-
-
 def build_stats_query(
     start_date: Optional[str],
     end_date: Optional[str],
@@ -94,7 +79,6 @@ def build_stats_query(
 
 @router.get("/stats")
 async def get_event_stats(
-    cache: DependsCacheRedis,
     start_date: Optional[str] = Query(
         None, description="Filter events after this date (ISO format)"),
     end_date: Optional[str] = Query(
@@ -104,32 +88,10 @@ async def get_event_stats(
 ):
     """Get event statistics using MongoDB aggregation pipeline with Redis caching."""
 
-    # Try to get result from cache first
-    cache_key = generate_cache_key(start_date, end_date, time_bucket)
-    cached_result = cache.get(cache_key)
-    if cached_result:
-        print("Cache hit for key:", cache_key)
-        return {
-            "cached": True,
-            "data": json.loads(cached_result)  # type: ignore
-        }
-
-    # If not in cache, run the aggregation query
     query = build_stats_query(start_date, end_date, time_bucket)
     stats = await Event.aggregate(query).to_list()
 
-    # Store result in cache for future use, if they are valid
-    if stats is not None:
-        cache.set(
-            name=cache_key,
-            value=json.dumps(stats, default=str),
-            ex=get_cache_ttl(time_bucket)
-        )
-
-    return {
-        "cached": False,
-        "data": stats
-    }
+    return stats
 
 
 @router.get("/stats/realtime")
