@@ -1,0 +1,11 @@
+# ── Full-text search on metadata.device ──────────────────────────────────────
+curl -s -X GET "http://localhost:9200/events/_search?pretty" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": {
+      "match": {
+        "metadata.device": "mobile"
+      }
+    }
+  }'
+

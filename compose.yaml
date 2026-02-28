@@ -20,9 +20,11 @@ services:
     depends_on:
       - mongo
       - redis
+      - elasticsearch
     environment:
       - MONGODB_URI=mongodb://root:example@mongo:27017/
       - REDIS_URL=redis://redis:6379/0
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     command: rq worker ingestion_queue --url redis://redis:6379/0 --with-scheduler
     deploy:
       replicas: 10
@@ -71,4 +73,6 @@ services:
       - "9200:9200"
     environment:
       - discovery.type=single-node
+      - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms1g -Xmx1g"
     mem_limit: 2g
