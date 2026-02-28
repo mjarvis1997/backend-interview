@@ -28,12 +28,6 @@ async def create_event_test():
     return {"message": "Event created"}
 
 
-@router.get("/delete-events")
-async def delete_events_test():
-    await Event.delete_all()
-    return {"message": "All events deleted"}
-
-
 @router.get("/redis")
 async def redis_test(r: DependsRedis):
     r.set("test_key", "Hello Redis!")

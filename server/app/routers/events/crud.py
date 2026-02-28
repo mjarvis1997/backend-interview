@@ -32,6 +32,9 @@ def build_event_query(
     if end_date:
         query = query.find(Event.timestamp <= dt_from_iso(end_date))
 
+    # sort by timestamp descending by default
+    query = query.sort("+type", "-timestamp")
+
     return query
 
 
@@ -67,3 +70,9 @@ async def create_event(event: Event):
         "message": "Event ingestion enqueued",
         "job_id": job_id
     }
+
+
+@router.delete("/")
+async def delete_events():
+    await Event.delete_all()
+    return {"message": "All events deleted"}

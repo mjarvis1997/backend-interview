@@ -35,11 +35,17 @@ def generate_event():
     ]
     browsers = ["chrome", "firefox", "safari"]
     devices = ["desktop", "mobile", "tablet"]
+    user_ids = [
+        "1c1b1acb-b216-47c9-8b54-721a1f44fd8b",
+        "2d2c2bdc-c327-58da-9c65-832b2f55fe9c",
+        "3e3d3cde-d438-69eb-ad76-943c3g66gf0d",
+        "4f4e4def-e549-7afc-be87-a54d4h77hg1e"
+    ]
 
     return {
         "type": choice(event_types),
         "timestamp": get_random_recent_timestamp(),
-        "user_id": str(uuid4()),
+        "user_id": choice(user_ids),
         "source_url": choice(urls),
         "metadata": {
             "browser": choice(browsers),
