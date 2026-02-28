@@ -53,7 +53,7 @@ def enqueue_event_ingestion(event: Event):
     job = q.enqueue(
         f=ingest_event,
         args=[event_data],
-        retry=Retry(max=3, interval=[10, 30, 60])
+        retry=Retry(max=3, interval=[1, 5, 15])
     )
 
     return job.id
