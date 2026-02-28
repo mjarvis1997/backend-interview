@@ -7,12 +7,13 @@ from app.models.event import Event
 from app.helpers.date import dt_from_iso
 from app.dependencies.redis import DependsCacheRedis, generate_cache_key
 
+TimeBucket = Literal['hourly', 'daily', 'weekly']
+
+# Reused constants for cache TTL settings
+ONE_HOUR_IN_SECONDS = 3600
+REALTIME_STATS_CACHE_KEY = generate_cache_key("realtime-stats")
 
 router = APIRouter()
-
-ONE_HOUR_IN_SECONDS = 3600
-
-TimeBucket = Literal['hourly', 'daily', 'weekly']
 
 
 def get_cache_ttl(time_bucket: Optional[TimeBucket]) -> int:
@@ -103,10 +104,8 @@ async def get_event_stats(
 ):
     """Get event statistics using MongoDB aggregation pipeline with Redis caching."""
 
-    # Generate cache key from query parameters
-    cache_key = generate_cache_key(start_date, end_date, time_bucket)
-
     # Try to get result from cache first
+    cache_key = generate_cache_key(start_date, end_date, time_bucket)
     cached_result = cache.get(cache_key)
     if cached_result:
         print("Cache hit for key:", cache_key)
@@ -119,11 +118,10 @@ async def get_event_stats(
     query = build_stats_query(start_date, end_date, time_bucket)
     stats = await Event.aggregate(query).to_list()
 
-    # Store result in cache for future use
-    # Check if stats are valid before caching (e.g. not None or empty)
+    # Store result in cache for future use, if they are valid
     if stats is not None:
         cache.set(
-            name="cache_key",
+            name=cache_key,
             value=json.dumps(stats, default=str),
             ex=get_cache_ttl(time_bucket)
         )
@@ -140,17 +138,15 @@ async def get_realtime_stats(
 ):
     """Get lightweight real-time stats.
 
-    This is a non-configurable endpoint intended for convenient analytics use.
+    This is a static endpoint intended for convenient analytics use.
     It always returns a daily count of events from the past month.
 
-    Cache entries live for 6 hours to 
+    The results are cached in Redis under a fixed key to ensure fast response times
+    for repeated requests, with a TTL that can be configured via environment variable.
     """
 
-    # Generate cache key from query parameters
-    cache_key = generate_cache_key("realtime", "daily")
-
     # Try to get result from cache
-    cached_result = cache.get(cache_key)
+    cached_result = cache.get(REALTIME_STATS_CACHE_KEY)
 
     if cached_result:
         return {
@@ -171,7 +167,7 @@ async def get_realtime_stats(
     # Store result in cache for future use
     if stats is not None:
         cache.set(
-            name=cache_key,
+            name=REALTIME_STATS_CACHE_KEY,
             value=json.dumps(stats, default=str),
             ex=cache_ttl_seconds
         )
@@ -180,3 +176,12 @@ async def get_realtime_stats(
         "cached": False,
         "data": stats
     }
+
+
+@router.delete("/stats/cache")
+async def clear_stats_cache(cache: DependsCacheRedis):
+    """Clear all cached event stats in Redis.
+    This is a destructive operation intended for testing."""
+
+    cache.flushdb()
+    return {"message": f"Cleared cached stats entries from Redis"}
