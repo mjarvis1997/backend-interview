@@ -6,10 +6,12 @@ services:
     depends_on:
       - mongo
       - redis
+      - elasticsearch
     environment:
       - MONGODB_URI=mongodb://root:example@mongo:27017/
       - REDIS_URL=redis://redis:6379/0
       - REALTIME_STATS_CACHE_TTL_MINUTES=60
+      - ELASTICSEARCH_URL=http://elasticsearch:9200
     command: uvicorn app.main:app --host 0.0.0.0 --port 8000
     profiles: [prod]
 
@@ -32,6 +34,7 @@ services:
     depends_on:
       - redis
     command: rq-dashboard --redis-url redis://redis:6379/0 --port 9181
+    stop_grace_period: 1s
     
 
   redis:
@@ -60,3 +63,12 @@ services:
       ME_CONFIG_BASICAUTH_ENABLED: true
       ME_CONFIG_BASICAUTH_USERNAME: mongoexpressuser
       ME_CONFIG_BASICAUTH_PASSWORD: mongoexpresspass
+
+  elasticsearch:
+    image: elasticsearch:9.3.1
+    restart: unless-stopped
+    ports:
+      - "9200:9200"
+    environment:
+      - discovery.type=single-node
+    mem_limit: 2g

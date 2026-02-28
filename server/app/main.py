@@ -5,6 +5,7 @@ from app.routers.tests import router as tests_router
 from app.routers.events import router as events_router
 from app.dependencies.redis import queue_pool, cache_pool
 from app.dependencies.database import init_database
+from app.dependencies.elasticsearch import init_elasticsearch
 
 # Load environment variables from .env file
 # In docker, we will set env vars directly, this is mainly for local development
@@ -18,6 +19,7 @@ async def lifespan(_app: FastAPI):
     # ***** Initialization code for setup here *****
 
     await init_database()
+    await init_elasticsearch()
 
     # Attach routers to app
     _app.include_router(tests_router)

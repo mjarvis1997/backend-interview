@@ -193,6 +193,8 @@ https://beanie-odm.dev/getting-started/
 
 https://beanie-odm.dev/tutorial/aggregation/
 
+https://github.com/roman-right/beanie-fastapi-demo
+
 https://pypi.org/project/python-dotenv/
 
 https://docs.docker.com/compose/how-tos/profiles/
@@ -201,13 +203,14 @@ https://redis.io/docs/latest/develop/clients/redis-py/
 
 https://github.com/Parallels/rq-dashboard
 
-https://github.com/roman-right/beanie-fastapi-demo
+https://www.elastic.co/docs/solutions/search
 
 ## TODO
 core:
-- Add Elasticsearch (2-3 hours)
-- Create ARCHITECTURE.md (1-2 hours)
-- Add Testing Suite (2-3 hours)
+- Add Elasticsearch
+- Create ARCHITECTURE.md
+- Add Testing Suite
+- reconsider realtime stats endpoint (should it be more granular?)
 
 bonus:
 - Basic rate limiting or abuse prevention middleware
