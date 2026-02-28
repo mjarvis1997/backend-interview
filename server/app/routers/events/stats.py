@@ -1,3 +1,4 @@
+import os
 from typing import Optional, Literal
 import json
 from datetime import datetime, timedelta
@@ -150,6 +151,7 @@ async def get_realtime_stats(
 
     # Try to get result from cache
     cached_result = cache.get(cache_key)
+
     if cached_result:
         return {
             "cached": True,
@@ -158,17 +160,20 @@ async def get_realtime_stats(
 
     # If not in cache, run the aggregation query
     # get iso date for 30 days ago
-
     one_month_ago = datetime.now() - timedelta(days=30)
     query = build_stats_query(one_month_ago.isoformat(), None, "daily")
     stats = await Event.aggregate(query).to_list()
+
+    # Determine cache TTL based on environment var
+    cache_ttl_setting = os.getenv("REALTIME_STATS_CACHE_TTL_MINUTES", "60")
+    cache_ttl_seconds = int(cache_ttl_setting) * 60
 
     # Store result in cache for future use
     if stats is not None:
         cache.set(
             name=cache_key,
             value=json.dumps(stats, default=str),
-            ex=get_cache_ttl("daily")
+            ex=cache_ttl_seconds
         )
 
     return {
