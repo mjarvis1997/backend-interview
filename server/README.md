@@ -8,17 +8,28 @@ This is a simple implementation of the backend for an event tracking and analyti
 
 
 ## Setup
-The only dependency needed for both dev and prod is Docker.
+There are two main dependecies needed:
 
-https://docs.docker.com/desktop
+1. **Install Docker**:
+
+    https://docs.docker.com/desktop
+
+1. **Install Poetry**:
+
+    https://python-poetry.org/docs/#installing-with-pipx
 
 ### Run all containers
 
-For prod and testing, run all the containers.
+For quick review/usage, run all the containers.
 
 1. **Start all services**:
    ```bash
-   docker compose --profile prod up --build
+   docker compose --profile test up --build
+   ```
+
+1. **Fully stop and remove all services**:
+   ```bash
+   docker compose --profile test down --remove-orphans
    ```
 
 
@@ -30,10 +41,6 @@ For development, run the FastApi server directly and use Docker for the rest.
    ```bash
    docker-compose up --build
    ```
-
-1. **Install Poetry** (if not already installed):
-
-    https://python-poetry.org/docs/#installing-with-pipx
 
 1. **Install dependencies**:
    ```bash
@@ -55,14 +62,39 @@ For development, run the FastApi server directly and use Docker for the rest.
    - Mongo Express: http://localhost:8081 (mongoexpressuser/mongoexpresspass)
    - RQ Dashboard: http://localhost:9181
 
-### Test the endpoints
-Can use the API docs at http://localhost:8000/docs or the sample HTTP files in `app/sample-requests` for quick testing within vscode.
 
+### Testing Instructions
 
-TODO: how to run all tests?
-Pytest unit tests can be ran using
+#### Manual testing
+Start all the containers
+```bash
+docker compose --profile test up --build
 ```
-poetry run pytest tests/unit/test_date.py -v
+
+In a separate terminal, run the following command to send a batch of events to the server for ingestion:
+```bash
+poetry run python tests/simple_load_test.py 200 
+```
+
+- Monitor their progress through the RQ Dashboard at http://localhost:9181
+- To see the actual events you can query the entire events collection at http://localhost:8000/events/
+- Can use the API docs at http://localhost:8000/docs to see docs and test specific endpoints
+- Or install `REST client` extension in vscode and run the the sample HTTP files in `app/sample-requests`.
+
+#### Automated tests
+Unit tests can be ran using:
+```bash
+poetry run pytest tests/unit/ -v
+```
+
+Integration tests can be ran by starting the necessary containers:
+```bash
+docker compose --profile test up --build
+```
+
+And then running
+```bash
+poetry run pytest tests/integration/ -v
 ```
 
 ## Endpoint documentation
@@ -95,7 +127,7 @@ TODO:
 There were 3 use cases for testing that I focused on:
 
 ### 1. Unit tests for core business logic and helper functions
-Here I used pytest to write unit tests for the core business logic and helper functions in the codebase.
+Here I used pytest to write unit tests for the query building logic and helper functions in the codebase. I avoided testing the FastAPI endpoints directly because they would require mocking the Beanie queries and the database connections, meaning they would be more brittle and not really prove much. These will be able to be more accurately tested in the integration tests.
 
 ### 2. Integration tests covering full request lifecycles
 

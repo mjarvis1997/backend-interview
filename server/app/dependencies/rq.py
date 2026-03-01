@@ -59,9 +59,6 @@ async def ingest_event(event_data: dict):
     Args:
         event_data: Dictionary containing event data (serializable)
     """
-    # Randomly fail to simulate transient errors and trigger retries (10% failure rate)
-    if random() < 0.1:
-        raise Exception("Simulated transient error during event ingestion")
 
     event_id = await save_event_to_mongodb(event_data)
     await index_event_in_elasticsearch(event_id, event_data)

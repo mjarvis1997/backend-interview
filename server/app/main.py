@@ -1,7 +1,6 @@
 from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI
-from app.routers.tests import router as tests_router
 from app.routers.events import router as events_router
 from app.dependencies.redis import queue_pool, cache_pool
 from app.dependencies.database import init_database
@@ -22,7 +21,6 @@ async def lifespan(_app: FastAPI):
     await init_elasticsearch()
 
     # Attach routers to app
-    _app.include_router(tests_router)
     _app.include_router(events_router)
 
     yield
