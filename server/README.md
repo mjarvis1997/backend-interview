@@ -48,6 +48,8 @@ For prod and testing, run all the containers.
    - API: http://localhost:8000
    - API Docs: http://localhost:8000/docs
    - MongoDB: http://localhost:27017
+   - Redis: http://localhost:6379 (no built in UI)
+   - Elasticsearch: http://localhost:9200
    - Mongo Express: http://localhost:8081 (mongoexpressuser/mongoexpresspass)
    - RQ Dashboard: http://localhost:9181
 
@@ -82,7 +84,7 @@ For this I created a simple endpoint that accepts query parameters for filtering
 This endpoint uses a MongoDB aggregation pipeline to return counts of events grouped by type and time bucket. The time bucket can be configured via query parameter to be hourly, daily, or weekly. I designed it to be fairly simple and flexible so that a frontend could easily filter and display the results as needed.
 
 #### GET /events/search
-TODO: 
+This endpoint performs a full-text search across event metadata using Elasticsearch. It accepts a query string and optional filters for event type and date range. The results are limited to a default of 20 to focus on the most relevent matches, but this is configurable via query parameter.
 
 
 #### GET /events/stats/realtime
@@ -131,7 +133,7 @@ TODO:
 TODO:
 
 ### Code Quality & Standards
-TODO: 
+I focused on keeping functions small and single-purpose, and using descriptive names for functions and variables. I also tried to maintain a consistent style throughout the codebase, following PEP 8 guidelines where possible. I used type hints to improve readability and help catch potential bugs.
 
 ## AI In My Workflow
 

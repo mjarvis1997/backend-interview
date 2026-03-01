@@ -47,7 +47,7 @@ async def index_event_in_elasticsearch(event_id: str, event_data: dict) -> None:
         await es.index(
             index=EVENTS_INDEX,
             id=event_id,
-            document=event_data,
+            document={**event_data, "id": event_id},
         )
     finally:
         await es.close()
