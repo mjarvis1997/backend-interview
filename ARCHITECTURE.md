@@ -30,7 +30,9 @@ feathr-backend/
         │   └── elasticsearch.py  # ES client, index mapping, initialization
         └── helpers/
             └── date.py           # ISO 8601 parsing utility
-        └── sample-requests      # Sample payloads/queries for easy testing
+        └── sample-requests       # Sample payloads/queries for easy testing
+        └── tests                 # TODO:
+
 ```
 
 ---

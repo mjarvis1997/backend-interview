@@ -59,6 +59,12 @@ For development, run the FastApi server directly and use Docker for the rest.
 Can use the API docs at http://localhost:8000/docs or the sample HTTP files in `app/sample-requests` for quick testing within vscode.
 
 
+TODO: how to run all tests?
+Pytest unit tests can be ran using
+```
+poetry run pytest tests/unit/test_date.py -v
+```
+
 ## Endpoint documentation
 Generic documentation and testing is available in the API docs at http://localhost:8000/docs once the server is running. HTTP files in `app/sample-requests` can be used for quick testing within vscode.
 
@@ -83,6 +89,18 @@ In the real world, we would probably want to just implement opt-in caching on th
 #### __POST /events__
 This endpoint accepts event data, validates it, and enqueues it for async processing by the workers. The workers will then write the events to MongoDB and index them in Elasticsearch. If processing fails, the job will be retried with a basic backoff strategy provided by RQ. If it fails repeatedly it will end up in a simple dead letter queue that comes implicitly with the RQ implementation.
 
+
+## Testing Approach
+TODO: 
+There were 3 use cases for testing that I focused on:
+
+### 1. Unit tests for core business logic and helper functions
+Here I used pytest to write unit tests for the core business logic and helper functions in the codebase.
+
+### 2. Integration tests covering full request lifecycles
+
+### 3. Manual testing via API docs and sample HTTP files
+I found it helpful to be able to quickly send pre-baked requests to the server without having to spin up the full test suite, especially when testing the async ingestion pipeline and wanting to see results in MongoDB or Elasticsearch. I created some sample HTTP files in `app/sample-requests` that can be easily executed within VSCode to send requests to the running server and observe the results.
 
 ## AI In My Workflow
 In general, my strategy with AI on this project was to use it as a brainstorming partner and for scaffolding, but to rely on my own judgement and research for the actual implementation details. I found that the AI was particularly helpful for generating ideas and providing initial code snippets, but I often had to push back on or modify its suggestions based on my own understanding of the problem and the technologies involved. I used Github Copilot with Claude 4.5 Sonnet within VSCode, leveraging the autocomplete, ask, and agent features.
