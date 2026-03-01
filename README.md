@@ -8,29 +8,32 @@ This is a simple implementation of the backend for an event tracking and analyti
 
 
 ## Setup
-There are two main dependecies needed:
+There are two main dependencies needed:
 
-1. **Install Docker**:
+**Install Docker**:
 
-    https://docs.docker.com/desktop
+https://docs.docker.com/desktop
 
-1. **Install Poetry**:
+**Install Poetry**:
 
-    https://python-poetry.org/docs/#installing-with-pipx
+https://python-poetry.org/docs/#installing-with-pipx
 
 ### Run all containers
 
 For quick review/usage, run all the containers.
 
-1. **Start all services**:
-   ```bash
-   docker compose --profile test up --build
-   ```
+**Start all services**:
+```bash
+docker compose --profile test up --build
+```
 
-1. **Fully stop and remove all services**:
-   ```bash
-   docker compose --profile test down --remove-orphans
-   ```
+**Fully stop and remove all services**:
+
+After testing, you can stop and remove all containers with:
+
+```bash
+docker compose --profile test down --remove-orphans
+```
 
 
 ### Local Development
@@ -66,13 +69,14 @@ For development, run the FastApi server directly and use Docker for the rest.
 ### Testing Instructions
 
 #### Manual testing
-Start all the containers
+Start all the containers, and wait for them to appear healthy
 ```bash
 docker compose --profile test up --build
 ```
 
 In a separate terminal, run the following command to send a batch of events to the server for ingestion:
 ```bash
+cd server
 poetry run python tests/simple_load_test.py 200 
 ```
 
@@ -84,6 +88,7 @@ poetry run python tests/simple_load_test.py 200
 #### Automated tests
 Unit tests can be ran using:
 ```bash
+cd server
 poetry run pytest tests/unit/ -v
 ```
 
@@ -94,6 +99,7 @@ docker compose --profile test up --build
 
 And then running
 ```bash
+cd server
 poetry run pytest tests/integration/ -v
 ```
 
@@ -123,13 +129,15 @@ This endpoint accepts event data, validates it, and enqueues it for async proces
 
 
 ## Testing Approach
-TODO: 
-There were 3 use cases for testing that I focused on:
+There were 3 use cases for testing that I focused on. Due to the time constraints, I did not spend as much time as I would have liked on testing. I did cover the core functionality with unit and integration tests, but I would have liked to think harder about what cases where important to test, and lean on AI less for this part.
 
 ### 1. Unit tests for core business logic and helper functions
 Here I used pytest to write unit tests for the query building logic and helper functions in the codebase. I avoided testing the FastAPI endpoints directly because they would require mocking the Beanie queries and the database connections, meaning they would be more brittle and not really prove much. These will be able to be more accurately tested in the integration tests.
 
 ### 2. Integration tests covering full request lifecycles
+The integration tests work by spinning up the necessary containers with Docker Compose, and then sending actual HTTP requests to the running server. This allows us to test the full lifecycle of a request, including the async processing by the workers and the interactions with MongoDB and Elasticsearch. For example, we can send a POST request to ingest an event, and then poll the GET endpoint until we see that event appear in the results.
+
+There is cleanup logic that helps ensure that the previous runs don't leak and interfere with the results.
 
 ### 3. Manual testing via API docs and sample HTTP files
 I found it helpful to be able to quickly send pre-baked requests to the server without having to spin up the full test suite, especially when testing the async ingestion pipeline and wanting to see results in MongoDB or Elasticsearch. I created some sample HTTP files in `app/sample-requests` that can be easily executed within VSCode to send requests to the running server and observe the results.

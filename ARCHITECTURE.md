@@ -31,7 +31,9 @@ feathr-backend/
         └── helpers/
             └── date.py           # ISO 8601 parsing utility
         └── sample-requests       # Sample payloads/queries for easy testing
-        └── tests                 # TODO:
+        └── tests
+            ├── unit/             # Unit tests for individual functions and components
+            └── integration/      # Integration tests covering end-to-end request lifecycles
 
 ```
 
