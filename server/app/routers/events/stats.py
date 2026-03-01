@@ -118,8 +118,8 @@ async def get_realtime_stats(
 
     # If not in cache, run the aggregation query
     # get iso date for 30 days ago
-    one_month_ago = datetime.now() - timedelta(days=30)
-    query = build_stats_query(one_month_ago.isoformat(), None, "daily")
+    seven_days_ago = datetime.now() - timedelta(days=7)
+    query = build_stats_query(seven_days_ago.isoformat(), None, "hourly")
     stats = await Event.aggregate(query).to_list()
 
     # Determine cache TTL based on environment var
@@ -146,4 +146,4 @@ async def clear_stats_cache(cache: DependsCacheRedis):
     This is a destructive operation intended for testing."""
 
     cache.flushdb()
-    return {"message": f"Cleared cached stats entries from Redis"}
+    return {"message": "Cleared cached stats entries from Redis"}
